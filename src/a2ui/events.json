@@ -1,0 +1,23 @@
+[
+  { "type": "surface_open", "surfaceId": "job-match-1", "root": "card", "nodes": [{ "id": "card", "component": "Card", "children": [] }], "timestamp": "" },
+  { "type": "surface_update", "surfaceId": "job-match-1", "nodes": [
+    { "id": "card", "component": "Card", "children": ["title"] },
+    { "id": "title", "component": "CardTitle", "props": { "text": "Senior Staff UI Architect — 92% match" } }
+  ], "timestamp": "" },
+  { "type": "surface_update", "surfaceId": "job-match-1", "nodes": [
+    { "id": "card", "component": "Card", "children": ["title", "badgeRow"] },
+    { "id": "badgeRow", "component": "Row", "children": ["badgeA", "badgeB"] },
+    { "id": "badgeA", "component": "Badge", "props": { "variant": "primary", "text": "Agent-driven UI" } },
+    { "id": "badgeB", "component": "Badge", "props": { "variant": "outline", "text": "A2UI · A2A" } }
+  ], "timestamp": "" },
+  { "type": "surface_update", "surfaceId": "job-match-1", "nodes": [
+    { "id": "card", "component": "Card", "children": ["title", "badgeRow", "desc"] },
+    { "id": "desc", "component": "CardDescription", "props": { "text": "Composed by an agent from a declarative A2UI payload, rendered through the Strata React component catalog — UI as data, not executable code." } }
+  ], "timestamp": "" },
+  { "type": "surface_update", "surfaceId": "job-match-1", "nodes": [
+    { "id": "card", "component": "Card", "children": ["title", "badgeRow", "desc", "actions"] },
+    { "id": "actions", "component": "Row", "children": ["viewBtn", "dismissBtn"] },
+    { "id": "viewBtn", "component": "Button", "props": { "variant": "primary", "text": "View role" }, "events": [{ "on": "click", "action": "view_role" }] },
+    { "id": "dismissBtn", "component": "Button", "props": { "variant": "ghost", "text": "Dismiss" }, "events": [{ "on": "click", "action": "dismiss" }] }
+  ], "timestamp": "" }
+]
