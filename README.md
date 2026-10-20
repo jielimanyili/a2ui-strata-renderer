@@ -7,6 +7,8 @@ A minimal **agent-driven UI** demo: an agent emits a declarative **A2UI** payloa
 Built to close the "agent-driven UI (A2UI / A2A)" gap for the Pebl **Senior Staff UI Architect**
 role, where "interfaces are increasingly composed by AI agents in real time."
 
+**Live:** https://a2ui-strata-renderer.vercel.app · **Repo:** https://github.com/jielimanyili/a2ui-strata-renderer
+
 ## What it shows
 
 - **UI as data** — the left panel shows the raw JSON the agent sent; the right panel shows the
@@ -50,7 +52,7 @@ static host; the `server.mjs` SSE endpoint needs a Node host (Render/Railway/Fly
 
 ## Stack
 
-- Vite 5 + React 18 + TypeScript
+- Vite 5 + React 19 + TypeScript
 - `@jieli/strata-ui` (Strata design system) — the component catalog
 - No other runtime dependencies
 
