@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --port 5175",
     "build": "tsc --noEmit && vite build",
+    "build:ghpages": "tsc --noEmit && vite build --base=/a2ui-strata-renderer/",
     "start": "node server.mjs",
     "preview": "vite preview"
   },
