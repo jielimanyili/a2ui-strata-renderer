@@ -92,7 +92,7 @@ export default function App() {
         </p>
         <div className="actions">
           <button onClick={play} disabled={busy}>
-            {busy ? "Streaming…" : "▶ Play agent stream (simulate)"}
+            {busy ? "Streaming…" : "▶ Replay fixture (events.json)"}
           </button>
           <button onClick={emit} disabled={busy}>
             {busy ? "Emitting…" : "⚙ Emit (deterministic agent)"}
