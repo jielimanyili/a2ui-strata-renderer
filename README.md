@@ -1,10 +1,10 @@
 # A2UI → Strata Renderer
 
-A minimal **agent-driven UI** demo: a hand-authored, declarative **A2UI** payload
-(Google's "UI as data, not executable code" spec) is streamed to a host **renderer** that maps it
-onto the **Strata** React component catalog — the same catalog human-authored screens use. It
-demonstrates the **renderer + catalog + transport** half of A2UI; agent-side emission (the LLM
-actually generating the A2UI JSON) is the stated next step.
+A minimal **agent-driven UI** demo of the full A2UI loop: a **deterministic agent** emits a
+declarative **A2UI** payload (Google's "UI as data, not executable code" spec), a **validation
+gate** checks it against the catalog allow-list, and a host **renderer** maps it onto the
+**Strata** React component catalog — the same catalog human-authored screens use. A real LLM is a
+drop-in replacement for the deterministic emitter (same stream shape).
 
 Built to close the "agent-driven UI (A2UI / A2A)" gap — the idea that "interfaces are increasingly
 composed by AI agents in real time" rather than hand-built screen by screen.
@@ -23,6 +23,10 @@ composed by AI agents in real time" rather than hand-built screen by screen.
   transport would deliver.
 - **Round-trip events** — clicking a rendered button bubbles a semantic `action` back (e.g.
   `view_role`), demonstrating the event/round-trip model A2UI requires.
+- **Agent-side emission** — `emitter.ts` composes a valid A2UI stream from a small intent payload
+  (`{ title, tags, summary, actions }`), using only the catalog vocabulary.
+- **Validation gate** — `validate.ts` checks every node against the catalog allow-list and prop
+  schema before render. Try **"✗ Emit invalid"** to see it reject an unknown component.
 
 ## Run
 
@@ -58,11 +62,13 @@ static host; the `server.mjs` SSE endpoint needs a Node host (Render/Railway/Fly
 - `@jieli/strata-ui` (Strata design system) — the component catalog
 - No other runtime dependencies
 
-## How this maps to the Pebl role
+## How it maps to an agent-driven-UI role
 
-| Pebl requirement | Where it shows up here |
+| Requirement | Where it shows up here |
 |---|---|
 | Lead adoption of Google's A2UI | `src/a2ui/types.ts` (declarative surface model) + `renderer.tsx` (host renderer) |
+| Agent-side emission | `src/a2ui/emitter.ts` — deterministic intent → A2UI stream |
+| Validation / trust boundary | `src/a2ui/validate.ts` + `catalog-schema.ts` — allow-list + prop-schema gate |
 | Renderer strategy / component catalog | `src/a2ui/catalog.tsx` — name → component registry (allow-list) |
 | Event / round-trip model | `events` bindings → `onEvent` actions |
 | "UI as data, not executable code" | JSON payload is pure data; the renderer is the only code path |

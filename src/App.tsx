@@ -3,11 +3,27 @@ import { A2UIRenderer } from "./a2ui/renderer";
 import { useA2UISurface } from "./a2ui/useA2UISurface";
 import { simulateJobMatch } from "./a2ui/simulate";
 import { useA2UILive } from "./sse/useA2UILive";
-import type { A2UISurface } from "./a2ui/types";
+import { emitMatchCard, type MatchIntent } from "./a2ui/emitter";
+import { validateEvents, type ValidationResult } from "./a2ui/validate";
+import type { A2UISurface, A2UIStreamEvent } from "./a2ui/types";
+
+const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+// A deterministic sample intent — the "task" the agent is asked to render.
+const SAMPLE_INTENT: MatchIntent = {
+  surfaceId: "emitted-match-1",
+  title: "Senior Staff UI Architect — strong fit",
+  tags: ["Agent-driven UI", "A2UI", "Design system"],
+  summary:
+    "Emitted by the deterministic agent from a small intent payload, composed only from the Strata catalog, then validated against the allow-list before render.",
+  primaryAction: "View role",
+  secondaryAction: "Dismiss",
+};
 
 export default function App() {
   const { root, nodes, events, busy, handleEvent, reset, setBusy } = useA2UISurface();
   const [intents, setIntents] = useState<string[]>([]);
+  const [validation, setValidation] = useState<ValidationResult | null>(null);
   const live = useA2UILive(handleEvent);
 
   const surface: A2UISurface | null = root ? { version: "0.1", root, nodes } : null;
@@ -15,6 +31,7 @@ export default function App() {
   const play = async () => {
     reset();
     setIntents([]);
+    setValidation(null);
     setBusy(true);
     await simulateJobMatch(handleEvent);
     setBusy(false);
@@ -23,7 +40,43 @@ export default function App() {
   const connectLive = () => {
     reset();
     setIntents([]);
+    setValidation(null);
     live.connect();
+  };
+
+  const streamThrough = async (stream: A2UIStreamEvent[]) => {
+    setBusy(true);
+    for (const event of stream) {
+      await wait(500);
+      handleEvent(event);
+    }
+    setBusy(false);
+  };
+
+  const emit = async () => {
+    reset();
+    setIntents([]);
+    const stream = emitMatchCard(SAMPLE_INTENT);
+    setValidation(validateEvents(stream));
+    await streamThrough(stream);
+  };
+
+  const emitInvalid = async () => {
+    reset();
+    setIntents([]);
+    const stream = emitMatchCard(SAMPLE_INTENT);
+    // Inject an unknown component to demonstrate the gate rejecting it.
+    stream.push({
+      type: "surface_update",
+      surfaceId: SAMPLE_INTENT.surfaceId,
+      nodes: [
+        { id: "card", component: "Card", children: ["title", "badgeRow", "desc", "actions", "evil"] },
+        { id: "evil", component: "ArbitraryWidget", props: { text: "should be rejected" } },
+      ],
+      timestamp: new Date().toISOString(),
+    });
+    setValidation(validateEvents(stream));
+    await streamThrough(stream);
   };
 
   const onIntent = (action: string) => setIntents((prev) => [...prev, action]);
@@ -41,6 +94,12 @@ export default function App() {
           <button onClick={play} disabled={busy}>
             {busy ? "Streaming…" : "▶ Play agent stream (simulate)"}
           </button>
+          <button onClick={emit} disabled={busy}>
+            {busy ? "Emitting…" : "⚙ Emit (deterministic agent)"}
+          </button>
+          <button onClick={emitInvalid} disabled={busy}>
+            {busy ? "Emitting…" : "✗ Emit invalid (demo gate)"}
+          </button>
           <button onClick={connectLive} disabled={live.connected}>
             {live.connected ? "● Live (connected)" : "🔌 Connect live stream"}
           </button>
@@ -48,6 +107,7 @@ export default function App() {
             onClick={() => {
               reset();
               setIntents([]);
+              setValidation(null);
               live.disconnect();
             }}
             disabled={busy}
@@ -60,6 +120,13 @@ export default function App() {
             ? "Live SSE connected — streaming from /a2ui/stream"
             : "Simulate mode (no backend) · connect Live to stream over SSE"}
         </div>
+        {validation && (
+          <div className="status">
+            {validation.ok
+              ? `✓ validation gate passed — ${validation.errors.length} errors`
+              : `✗ validation gate rejected — ${validation.errors.map((e) => e.message).join(" · ")}`}
+          </div>
+        )}
       </header>
 
       <main className="grid">

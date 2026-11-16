@@ -20,17 +20,20 @@
                      onEvent(action)  ── round-trip back to agent
 ```
 
-> **Note (honest scope):** in this demo the "agent" is **simulated** — `simulate.ts` (Simulate
-> mode) and `server.mjs` (Live SSE) both replay a hand-authored `src/a2ui/events.json` fixture.
-> There is no LLM in this repo that *generates* the A2UI payload; agent-side emission
-> (LLM → A2UI JSON) is the intended next step. What's implemented here is the
-> **renderer + catalog + transport** half of the A2UI loop.
+> **Note (honest scope):** the "agent" has two forms. `simulate.ts` (Simulate mode) and
+> `server.mjs` (Live SSE) replay a hand-authored `src/a2ui/events.json` fixture; `emitter.ts`
+> deterministically *generates* a valid A2UI stream from an intent payload — no LLM. A real LLM is
+> a drop-in replacement for the emitter. The trust boundary is explicit: `validate.ts` rejects
+> anything outside the catalog allow-list before render.
 
 ## Components
 
 | File | Job |
 |---|---|
 | `src/a2ui/types.ts` | The declarative contract: `A2UINode`, `A2UISurface`, `A2UIStreamEvent` |
+| `src/a2ui/catalog-schema.ts` | Prop contracts per component — the "catalog is the prompt" vocabulary |
+| `src/a2ui/emitter.ts` | Deterministic agent — intent → valid A2UI stream (catalog vocabulary only) |
+| `src/a2ui/validate.ts` | Validation gate — allow-list + prop-schema + cross-node reference checks |
 | `src/a2ui/catalog.tsx` | The **component catalog** — name → component registry (Strata + local layout primitives) |
 | `src/a2ui/renderer.tsx` | The host renderer — recursive, catalog-driven, event-binding |
 | `src/a2ui/useA2UISurface.ts` | State reducer — applies stream events, upserts nodes by id |
