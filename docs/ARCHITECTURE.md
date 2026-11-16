@@ -20,6 +20,12 @@
                      onEvent(action)  ── round-trip back to agent
 ```
 
+> **Note (honest scope):** in this demo the "agent" is **simulated** — `simulate.ts` (Simulate
+> mode) and `server.mjs` (Live SSE) both replay a hand-authored `src/a2ui/events.json` fixture.
+> There is no LLM in this repo that *generates* the A2UI payload; agent-side emission
+> (LLM → A2UI JSON) is the intended next step. What's implemented here is the
+> **renderer + catalog + transport** half of the A2UI loop.
+
 ## Components
 
 | File | Job |

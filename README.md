@@ -1,18 +1,20 @@
 # A2UI → Strata Renderer
 
-A minimal **agent-driven UI** demo: an agent emits a declarative **A2UI** payload
-(Google's "UI as data, not executable code" spec) and a host **renderer** maps it onto the
-**Strata** React component catalog — the same catalog human-authored screens use.
+A minimal **agent-driven UI** demo: a hand-authored, declarative **A2UI** payload
+(Google's "UI as data, not executable code" spec) is streamed to a host **renderer** that maps it
+onto the **Strata** React component catalog — the same catalog human-authored screens use. It
+demonstrates the **renderer + catalog + transport** half of A2UI; agent-side emission (the LLM
+actually generating the A2UI JSON) is the stated next step.
 
-Built to close the "agent-driven UI (A2UI / A2A)" gap for the Pebl **Senior Staff UI Architect**
-role, where "interfaces are increasingly composed by AI agents in real time."
+Built to close the "agent-driven UI (A2UI / A2A)" gap — the idea that "interfaces are increasingly
+composed by AI agents in real time" rather than hand-built screen by screen.
 
 **Live:** https://a2ui-strata-renderer.vercel.app · **Repo:** https://github.com/jielimanyili/a2ui-strata-renderer
 
 ## What it shows
 
-- **UI as data** — the left panel shows the raw JSON the agent sent; the right panel shows the
-  UI it renders into. No executable code crosses the boundary.
+- **UI as data** — the left panel shows the raw A2UI JSON payload; the right panel shows the
+  UI the renderer produces. No executable code crosses the boundary.
 - **A catalog allow-list** — the renderer resolves component *names* against a curated registry
   (`catalog.tsx`). An agent can only compose from that list; an unknown name renders a safe
   "not in catalog" placeholder instead of arbitrary markup.
